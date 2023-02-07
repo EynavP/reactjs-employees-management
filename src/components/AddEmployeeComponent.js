@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import { useNavigate, Link, useParams } from 'react-router-dom'
 import EmployeeService from '../services/EmployeeService'
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const AddEmployeeComponent = () => {
     
@@ -9,22 +11,39 @@ const AddEmployeeComponent = () => {
     const [email,setEmail] = useState('')
     const navigate = useNavigate();
     const {id} = useParams();
-
+    const regex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/
+    
     const saveOrUpdateEmployee = (e) =>{
         e.preventDefault();
+        const message = ""
         const employee = {first_name, last_name, email}
 
         if(id){
-            EmployeeService.updateEmployee(id, employee).then(response =>{
-                console.log(response.data)
-                navigate('/employees');
-            }).catch(error => {console.log(error);});
+            if(last_name.length === 0 || last_name.length === 0 || email.length ===0 ){
+                toast.error("Fields can't be empty!")
+            }
+            else if(!regex.test(email)){
+                toast.error("Email address is not valid!")
+            }
+            else{
+                EmployeeService.updateEmployee(id, employee).then(response =>{
+                    console.log(response.data)
+                    navigate('/employees');
+                }).catch(error => {console.log(error);});
+            }
         }
         else{
-            EmployeeService.createEmployee(employee).then(response => {
-                console.log(response.data)
-                navigate('/employees');
-        }).catch(error => {console.log(error)});
+            if(last_name.length === 0 || last_name.length === 0 || email.length ===0 ){
+                toast.error("Fields can't be empty!")
+            }
+            else if(!regex.test(email)){
+                toast.error("Email address is not valid!")
+            }else{
+                EmployeeService.createEmployee(employee).then(response => {
+                    console.log(response.data)
+                    navigate('/employees');
+                }).catch(error => {console.log(error)});
+            }
         }  
     }
 
@@ -90,12 +109,14 @@ const AddEmployeeComponent = () => {
                             </div>
                             <button className='btn btn-success' onClick={(e) => saveOrUpdateEmployee(e)}>Submit</button>
                             <Link to="/employees" className='btn btn-danger'>Cancel</Link>
+                            <ToastContainer/>
                         </form>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+    
   )
 }
 
